@@ -1,0 +1,120 @@
+:root {
+  --bg: #ffffff;
+  --page-bg: #f5f5f7;
+  --fg: #111111;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --panel: #f9fafb;
+  --danger: #111111;
+  --topbar-h: 72px;
+  --touch: 48px;
+  --touch-primary: 56px;
+  --radius-card: 10px;
+  --radius-btn: 999px;
+  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--fg);
+  font-family: var(--font);
+}
+
+button,
+input,
+textarea {
+  font-family: var(--font);
+}
+
+.btn {
+  min-height: var(--touch);
+  padding: 0 14px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.btn-primary {
+  min-height: var(--touch-primary);
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+  font-weight: 600;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.chip {
+  min-height: var(--touch);
+  padding: 0 12px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--fg);
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.chip[aria-selected="true"] {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #fff;
+}
+
+.icon-btn {
+  min-height: var(--touch);
+  min-width: var(--touch);
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--fg);
+  display: inline-grid;
+  place-items: center;
+}
+
+.input {
+  min-height: var(--touch);
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.kbd {
+  font-weight: 700;
+  font-size: 14px;
+}
