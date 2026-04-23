@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div v-if="hasAdvanced" class="accordion" :data-open="advancedOpen ? 'true' : 'false'">
+        <div v-if="showAdvancedToggle && hasAdvanced" class="accordion" :data-open="advancedOpen ? 'true' : 'false'">
           <div class="acc-head-row">
             <button class="acc-head" @click="advancedOpen = !advancedOpen">
               <span class="acc-title">进阶选择</span>
@@ -101,6 +101,71 @@
                       <img class="pm-icon" :src="iconPlus" alt="" />
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="hasAdvanced" class="acc-body">
+          <div v-for="g in advancedGroups" :key="g.id" class="section">
+            <div class="section-title">
+              <span class="stitle">
+                <span v-if="g.required" class="req">*</span>
+                <span>{{ g.name }}</span>
+              </span>
+            </div>
+            <div class="grid3">
+              <button v-for="o in g.options" :key="o.id" class="opt" :data-selected="selectedSpecs[g.id] === o.id" @click="selectedSpecs[g.id] = o.id">
+                <div class="opt-main">{{ o.name }}</div>
+                <div v-if="o.subtext" class="opt-sub muted">{{ o.subtext }}</div>
+              </button>
+            </div>
+          </div>
+
+          <div v-if="hasShotAddon" class="section">
+            <div class="section-title">
+              <span class="stitle">
+                <span>浓缩份数</span>
+              </span>
+            </div>
+            <div class="stepper card">
+              <div class="stepper-left">
+                <div class="stepper-name">浓缩份数</div>
+                <div class="muted stepper-sub">加购浓缩，调整份数</div>
+              </div>
+              <div class="stepper-right">
+                <button class="circle" @click="decAddon('shot')">
+                  <img class="pm-icon" :src="iconMinus" alt="" />
+                </button>
+                <div class="stepper-val">{{ selectedAddons['shot'] ?? 0 }}</div>
+                <button class="circle" @click="incAddon('shot')">
+                  <img class="pm-icon" :src="iconPlus" alt="" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="otherAddons.length" class="section">
+            <div class="section-title">
+              <span class="stitle">
+                <span>加料</span>
+              </span>
+            </div>
+            <div class="addon-list">
+              <div v-for="a in otherAddons" :key="a.id" class="addon">
+                <div class="a-left">
+                  <div class="a-name">{{ a.name }}</div>
+                  <div class="muted a-price">¥{{ a.price.toFixed(2) }}</div>
+                </div>
+                <div class="a-right">
+                  <button class="circle" @click="decAddon(a.id)">
+                    <img class="pm-icon" :src="iconMinus" alt="" />
+                  </button>
+                  <div class="qty">{{ selectedAddons[a.id] ?? 0 }}</div>
+                  <button class="circle" @click="incAddon(a.id, a.mutexGroupId)">
+                    <img class="pm-icon" :src="iconPlus" alt="" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -181,6 +246,7 @@ const otherAddons = computed(() => addons.value.filter((a) => a.id !== "shot"));
 const hasAdvanced = computed(
   () => advancedGroups.value.length > 0 || hasShotAddon.value || otherAddons.value.length > 0
 );
+const showAdvancedToggle = computed(() => specGroups.value.length > 4);
 
 function incAddon(addonId: string, mutexGroupId?: string) {
   if (mutexGroupId) {
