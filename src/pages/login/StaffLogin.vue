@@ -147,7 +147,7 @@ onUnmounted(() => {
 .layout {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 1fr;
   background:
     radial-gradient(1200px 900px at 18% 50%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 62%),
     linear-gradient(135deg, #0b0c0c 0%, #050505 70%, #000000 100%);
@@ -180,15 +180,14 @@ onUnmounted(() => {
 }
 
 .right {
-  padding: 24px;
+  padding: 0;
   display: grid;
-  align-items: stretch;
 }
 
 .sheet {
-  width: 520px;
-  height: calc(100vh - 48px);
-  border-radius: 28px;
+  width: 100%;
+  height: 100vh;
+  border-radius: 28px 0 0 28px;
   border: none;
   display: grid;
   grid-template-rows: 1fr auto;
