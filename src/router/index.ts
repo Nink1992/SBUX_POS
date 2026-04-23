@@ -6,7 +6,7 @@ import { STAFF_STORAGE_KEY } from "../stores/staff";
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: "/", redirect: "/pos" },
+    { path: "/", redirect: "/login" },
     { path: "/login", component: StaffLogin, meta: { requiresStaff: false } },
     { path: "/pos", component: PosHome, meta: { requiresStaff: true } }
   ]
