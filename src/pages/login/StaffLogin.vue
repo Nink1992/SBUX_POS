@@ -406,8 +406,11 @@ onUnmounted(() => {
 }
 
 .pin-actions {
-  display: flex;
-  justify-content: flex-end;
+  display: grid;
+}
+
+.pin-actions .btn {
+  width: 100%;
 }
 
 .sheet-foot {
