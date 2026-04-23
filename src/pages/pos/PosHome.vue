@@ -289,24 +289,28 @@
                 <div class="drawer-avatar">
                   <img class="drawer-avatar-img" :src="iconUser" alt="" />
                 </div>
-                <div class="drawer-user-text">
-                  <div class="muted drawer-role">门店收银员</div>
-                  <div class="drawer-name">{{ staffName }}</div>
-                </div>
+              <div class="drawer-user-text">
+                <div class="muted drawer-role">{{ staffStore.roleName }}</div>
+                <div class="drawer-name">{{ staffName }}</div>
+                <div class="muted drawer-store">{{ storeIdText }} {{ storeNameText }}</div>
               </div>
-              <button class="btn drawer-exit" @click="closeDrawer">下机</button>
+              </div>
+            <button class="btn drawer-exit" @click="onStaffLogout">下机</button>
             </div>
           </aside>
         </Transition>
       </div>
     </Transition>
   </div>
+
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useCatalogStore } from "../../stores/catalog";
 import { useMemberStore } from "../../stores/member";
+import { useStaffStore } from "../../stores/staff";
 import { useOrderStore } from "../../stores/order";
 import { calcLineUnitPrice } from "../../modules/pos/pricing";
 import type { OrderLine, SelectedAddons, SelectedSpecs } from "../../modules/pos/types";
@@ -336,7 +340,11 @@ import iconProducts from "../../assets/icons/商品管理_products.svg";
 import iconSetting from "../../assets/icons/设置_setting.svg";
 import iconUser from "../../assets/icons/用户_user.svg";
 
-const staffName = "店员A";
+const staffStore = useStaffStore();
+const router = useRouter();
+const staffName = computed(() => staffStore.staffName);
+const storeIdText = computed(() => staffStore.storeId);
+const storeNameText = computed(() => staffStore.storeName);
 
 const catalog = useCatalogStore();
 const memberStore = useMemberStore();
@@ -457,6 +465,12 @@ function closeDrawer() {
 function selectDrawer(id: DrawerId) {
   activeDrawerId.value = id;
   closeDrawer();
+}
+
+function onStaffLogout() {
+  staffStore.logout();
+  closeDrawer();
+  router.replace("/login");
 }
 
 function openSearchKeyboard() {
@@ -1090,6 +1104,11 @@ const memberActivities: MemberCouponItem[] = [
 
 .drawer-name {
   font-weight: 900;
+  white-space: nowrap;
+}
+
+.drawer-store {
+  font-size: 12px;
   white-space: nowrap;
 }
 
