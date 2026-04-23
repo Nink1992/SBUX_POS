@@ -34,7 +34,7 @@
 
           <div class="content">
             <div v-if="tab === 'phone_qr'" class="qr-area">
-              <div class="muted qr-hint">请使用 绿圈圈 扫码登录</div>
+              <div class="muted qr-hint">请使用 绿围裙 扫码登录</div>
               <div class="qr-img" aria-label="二维码"></div>
               <div class="qr-expire" :data-expired="qrSecondsLeft <= 0 ? 'true' : 'false'">
                 <span class="qr-sec">{{ Math.max(0, qrSecondsLeft) }}</span><span>秒后二维码失效</span>
