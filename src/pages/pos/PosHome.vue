@@ -415,7 +415,21 @@ function onResize() {
 }
 
 function specText(line: OrderLine): string {
-  const parts = Object.values(line.customization.specs).filter(Boolean);
+  const product = catalog.getProductById(line.productId);
+  const specs = line.customization.specs ?? {};
+  const parts: string[] = [];
+
+  if (product?.specGroups?.length) {
+    for (const g of product.specGroups) {
+      const optId = specs[g.id];
+      if (!optId) continue;
+      const opt = g.options.find((o) => o.id === optId);
+      if (opt?.name) parts.push(opt.name);
+    }
+  } else {
+    parts.push(...Object.values(specs).filter(Boolean));
+  }
+
   return parts.length ? `规格：${parts.join(" / ")}` : "";
 }
 
