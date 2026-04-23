@@ -148,7 +148,9 @@ onUnmounted(() => {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr auto;
-  background: #6b6b6b;
+  background:
+    radial-gradient(1200px 900px at 18% 50%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(135deg, #0b0c0c 0%, #050505 70%, #000000 100%);
 }
 
 .left {
