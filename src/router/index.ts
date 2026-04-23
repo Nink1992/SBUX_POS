@@ -13,8 +13,18 @@ export const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const isLoggedIn = !!localStorage.getItem(STAFF_STORAGE_KEY);
-  if (to.path === "/login" && isLoggedIn) return { path: "/pos", replace: true };
-  if (to.meta?.requiresStaff && !isLoggedIn) return { path: "/login", replace: true };
+  const raw = localStorage.getItem(STAFF_STORAGE_KEY);
+  let session: any = null;
+  if (raw) {
+    try {
+      session = JSON.parse(raw) as any;
+    } catch {
+      session = null;
+    }
+  }
+  const isLoggedIn = !!session;
+  const isVerified = !!session?.floatVerified;
+  if (to.path === "/login" && isLoggedIn && isVerified) return { path: "/pos", replace: true };
+  if (to.meta?.requiresStaff && !(isLoggedIn && isVerified)) return { path: "/login", replace: true };
   return true;
 });

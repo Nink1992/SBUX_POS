@@ -139,7 +139,7 @@ function onClear() {
 
 .modal {
   width: min(920px, 100%);
-  max-height: min(720px, 100%);
+  height: min(720px, 100%);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   overflow: hidden;

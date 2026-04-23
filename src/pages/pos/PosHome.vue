@@ -46,7 +46,7 @@
     </header>
 
     <main class="content">
-      <section class="left card">
+      <section class="left card" ref="leftPaneEl">
         <div v-if="isGuest" class="member card">
           <div class="member-left">
             <div class="avatar">
@@ -186,7 +186,7 @@
     </main>
 
     <Transition name="member-panel">
-      <div v-if="memberPanelVisible && !isGuest" class="member-panel-wrap" @click.self="closeMemberPanel">
+      <div v-if="memberPanelVisible && !isGuest" class="member-panel-wrap" :style="{ left: `${memberPanelLeft}px` }" @click.self="closeMemberPanel">
         <aside class="member-panel">
           <div class="member-panel-head">
             <div class="member-panel-title">会员信息-{{ member?.maskedPhone }}</div>
@@ -287,12 +287,11 @@
             <div class="drawer-foot">
               <div class="drawer-user">
                 <div class="drawer-avatar">
-                  <img class="drawer-avatar-img" :src="iconUser" alt="" />
+                  <img class="drawer-avatar-img" :src="iconAvatar" alt="" />
                 </div>
               <div class="drawer-user-text">
-                <div class="muted drawer-role">{{ staffStore.roleName }}</div>
                 <div class="drawer-name">{{ staffName }}</div>
-                <div class="muted drawer-store">{{ storeIdText }} {{ storeNameText }}</div>
+                <div class="muted drawer-store">{{ storeNameText }}</div>
               </div>
               </div>
             <button class="btn drawer-exit" @click="onStaffLogout">下机</button>
@@ -339,12 +338,13 @@ import iconTools from "../../assets/icons/促销工具_tools.svg";
 import iconProducts from "../../assets/icons/商品管理_products.svg";
 import iconSetting from "../../assets/icons/设置_setting.svg";
 import iconUser from "../../assets/icons/用户_user.svg";
+import iconAvatar from "../../assets/icons/Avatar (头像).svg";
 
 const staffStore = useStaffStore();
 const router = useRouter();
 const staffName = computed(() => staffStore.staffName);
-const storeIdText = computed(() => staffStore.storeId);
 const storeNameText = computed(() => staffStore.storeName);
+const STAFF_LOGIN_TOAST_KEY = "sbux_pos_staff_login_toast_v1";
 
 const catalog = useCatalogStore();
 const memberStore = useMemberStore();
@@ -364,6 +364,8 @@ const member = computed(() => memberStore.member);
 const isGuest = computed(() => memberStore.isGuest);
 const visitorNo = computed(() => memberStore.visitorNo);
 const memberPanelVisible = ref(false);
+const leftPaneEl = ref<HTMLElement | null>(null);
+const memberPanelLeft = ref(360);
 
 const nowText = ref("");
 const dateText = ref("");
@@ -384,6 +386,11 @@ function fmtDate(ts: number): string {
 onMounted(() => {
   nowText.value = fmtTime(Date.now());
   dateText.value = fmtDate(Date.now());
+  const loginToast = sessionStorage.getItem(STAFF_LOGIN_TOAST_KEY);
+  if (loginToast) {
+    showToast(loginToast);
+    sessionStorage.removeItem(STAFF_LOGIN_TOAST_KEY);
+  }
   timer = window.setInterval(() => {
     nowText.value = fmtTime(Date.now());
     dateText.value = fmtDate(Date.now());
@@ -403,8 +410,8 @@ onUnmounted(() => {
 });
 
 function onResize() {
-  if (!searchKeyboardVisible.value) return;
-  updateKeyboardPosition();
+  if (searchKeyboardVisible.value) updateKeyboardPosition();
+  syncMemberPanelLeft();
 }
 
 function specText(line: OrderLine): string {
@@ -737,6 +744,7 @@ function toggleMemberPanel() {
     openMemberModal();
     return;
   }
+  if (!memberPanelVisible.value) syncMemberPanelLeft();
   memberPanelVisible.value = !memberPanelVisible.value;
 }
 
@@ -747,6 +755,17 @@ function closeMemberPanel() {
 watch(isGuest, (v) => {
   if (v) memberPanelVisible.value = false;
 });
+
+function syncMemberPanelLeft() {
+  const rect = leftPaneEl.value?.getBoundingClientRect();
+  if (!rect) {
+    memberPanelLeft.value = 0;
+    return;
+  }
+  const w = window.innerWidth || 0;
+  const left = Math.round(rect.right);
+  memberPanelLeft.value = left > w - 64 ? 0 : left;
+}
 
 type MemberCouponItem = { name: string; qty: number };
 
@@ -1098,11 +1117,8 @@ const memberActivities: MemberCouponItem[] = [
   min-width: 0;
 }
 
-.drawer-role {
-  font-size: 12px;
-}
-
 .drawer-name {
+  font-size: 14px;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -1213,7 +1229,7 @@ const memberActivities: MemberCouponItem[] = [
 .member-panel-wrap {
   position: fixed;
   top: var(--topbar-h);
-  left: 360px;
+  left: 0;
   right: 0;
   bottom: 0;
   z-index: 65;
@@ -1377,6 +1393,25 @@ const memberActivities: MemberCouponItem[] = [
   transform: translateX(-36px);
 }
 
+@media (max-width: 980px) {
+  .member-panel-wrap {
+    left: 0;
+    justify-content: flex-end;
+  }
+
+  .member-panel {
+    width: min(480px, 100vw);
+  }
+
+  .member-panel-enter-from .member-panel {
+    transform: translateX(36px);
+  }
+
+  .member-panel-leave-to .member-panel {
+    transform: translateX(36px);
+  }
+}
+
 .toast {
   position: fixed;
   top: calc(var(--topbar-h) + 14px);
@@ -1501,7 +1536,7 @@ const memberActivities: MemberCouponItem[] = [
 }
 
 .empty-sub {
-  font-size: 16px;
+  font-size: 12px;
   max-width: 260px;
   line-height: 1.4;
 }

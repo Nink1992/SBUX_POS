@@ -351,6 +351,7 @@ function onConfirm() {
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: #fff;
+  color: var(--fg);
   text-align: center;
   display: grid;
   align-content: center;
@@ -369,6 +370,7 @@ function onConfirm() {
 
 .opt-sub {
   font-size: 12px;
+  color: var(--muted);
 }
 
 .addon-list {

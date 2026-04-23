@@ -5,6 +5,8 @@
         <img class="brand-logo" :src="iconStarbucks" alt="" />
         <div class="brand-text">星巴克门店POS系统</div>
       </div>
+      <div class="left-store">ID：{{ storeId }} 丨 门店名称：{{ storeName }}</div>
+      <div class="left-foot">当前系统版本：v1.0.0　© 2026 Starbucks Corporation. 内部系统，数据保密。</div>
     </div>
     <div class="right">
       <div class="sheet card">
@@ -12,11 +14,10 @@
           <div class="welcome">
             <div class="welcome-title">Hi! 伙伴，欢迎回来！</div>
             <div class="welcome-sub">为保障系统安全，请选择以下任一方式登录</div>
-            <div class="welcome-store muted">门店ID：{{ storeId }}　{{ storeName }}</div>
           </div>
 
           <div class="tabs">
-            <div class="seg" role="tablist" aria-label="上机认证方式">
+            <div ref="segEl" class="seg" role="tablist" aria-label="上机认证方式">
               <button class="seg-btn" role="tab" :aria-selected="tab === 'phone_qr'" @click="tab = 'phone_qr'">
                 <img class="seg-icon" :src="iconScan" alt="" />
                 <span class="seg-text">扫码登录</span>
@@ -34,7 +35,7 @@
 
           <div class="content">
             <div v-if="tab === 'phone_qr'" class="qr-area">
-              <div class="muted qr-hint">请使用 绿围裙 扫码登录</div>
+              <div class="muted qr-hint">请使用 <span class="apron">绿围裙</span> 扫码登录</div>
               <div class="qr-img" aria-label="二维码"></div>
               <div class="qr-expire" :data-expired="qrSecondsLeft <= 0 ? 'true' : 'false'">
                 <span class="qr-sec">{{ Math.max(0, qrSecondsLeft) }}</span><span>秒后二维码失效</span>
@@ -53,31 +54,40 @@
 
             <div v-else class="pin-area">
               <div class="pin-field">
-                <input class="pin-input" :value="maskedPin" readonly inputmode="numeric" />
+                <input class="pin-input" :value="maskedPin" placeholder="输入6位数字密码登录" readonly inputmode="numeric" />
                 <button class="pin-clear" :disabled="!pin" @click="pin = ''">清空</button>
               </div>
               <NumericKeyboard v-model="pin" :maxLen="6" />
               <div v-if="pinError" class="pin-error">{{ pinError }}</div>
               <div class="pin-actions">
-                <button class="btn btn-primary" :disabled="pin.length < 4" @click="onPinLogin">登录上机</button>
+                <button class="btn btn-primary" :style="{ width: `${authActionWidth}px` }" :disabled="pin.length !== 6" @click="onPinLogin">
+                  登录上机
+                </button>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="sheet-foot">
-          <div class="muted foot-text">当前系统版本：v1.0.0　© 2026 Starbucks Corporation. 内部系统，数据保密。</div>
-        </div>
       </div>
     </div>
   </div>
+
+  <CashVerifyModal
+    v-if="cashVerifyVisible"
+    :expectedTotal="expectedTotal"
+    :paper="expectedPaper"
+    :coin="expectedCoin"
+    :initialValue="initialFloat"
+    @close="onCashVerifyClose"
+    @confirm="onCashVerifyConfirm"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NumericKeyboard from "../../components/NumericKeyboard.vue";
 import { useStaffStore } from "../../stores/staff";
+import CashVerifyModal from "./components/CashVerifyModal.vue";
 import iconScan from "../../assets/icons/扫码_scan-code.svg";
 import iconKeyboard from "../../assets/icons/输入键盘_enter-the-keyboard.svg";
 import iconUser from "../../assets/icons/用户_user.svg";
@@ -96,26 +106,53 @@ const qrSecondsLeft = ref(120);
 let qrTimer: number | null = null;
 
 const maskedPin = computed(() => (pin.value ? "•".repeat(pin.value.length) : ""));
-const pinHint = computed(() => "请输入 4-6 位数字密码");
+const segEl = ref<HTMLElement | null>(null);
+const authActionWidth = ref(520);
+const cashVerifyVisible = ref(false);
+const expectedTotal = computed(() => staffStore.floatExpected);
+const expectedPaper = computed(() => staffStore.floatPaper);
+const expectedCoin = computed(() => staffStore.floatCoin);
+const initialFloat = computed(() => staffStore.floatActual ?? staffStore.floatExpected);
+const STAFF_LOGIN_TOAST_KEY = "sbux_pos_staff_login_toast_v1";
 
-function onPhoneLogin() {
-  staffStore.loginByPhoneQr({ storeId: "177165", storeName: "上海静安寺店" });
+function openCashVerify() {
+  cashVerifyVisible.value = true;
+}
+
+function onCashVerifyClose() {
+  cashVerifyVisible.value = false;
+  staffStore.logout();
+}
+
+function onCashVerifyConfirm(v: number) {
+  staffStore.confirmFloat(v);
+  cashVerifyVisible.value = false;
+  sessionStorage.setItem(STAFF_LOGIN_TOAST_KEY, `上机成功：${staffStore.staffName}　${staffStore.storeName}`);
   router.replace("/pos");
 }
 
+function onPhoneLogin() {
+  staffStore.loginByPhoneQr({ storeId: "86556", storeName: "深圳福保长平大厦店" });
+  openCashVerify();
+}
+
 function onBadgeLogin() {
-  staffStore.loginByBadge({ badgeNo: String(Math.floor(Math.random() * 90) + 10), storeId: "177165", storeName: "上海静安寺店" });
-  router.replace("/pos");
+  staffStore.loginByBadge({
+    badgeNo: String(Math.floor(Math.random() * 90) + 10),
+    storeId: "86556",
+    storeName: "深圳福保长平大厦店"
+  });
+  openCashVerify();
 }
 
 function onPinLogin() {
   pinError.value = "";
-  const res = staffStore.loginByPin({ pin: pin.value, storeId: "177165", storeName: "上海静安寺店" });
+  const res = staffStore.loginByPin({ pin: pin.value, storeId: "86556", storeName: "深圳福保长平大厦店" });
   if (!res.ok) {
     pinError.value = res.message ?? "登录失败";
     return;
   }
-  router.replace("/pos");
+  openCashVerify();
 }
 
 function startQrTimer() {
@@ -140,7 +177,20 @@ watch(
 
 onUnmounted(() => {
   if (qrTimer) window.clearInterval(qrTimer);
+  window.removeEventListener("resize", syncAuthActionWidth);
 });
+
+onMounted(() => {
+  syncAuthActionWidth();
+  window.addEventListener("resize", syncAuthActionWidth);
+  if (staffStore.isLoggedIn && !staffStore.isFloatVerified) openCashVerify();
+});
+
+function syncAuthActionWidth() {
+  const w = segEl.value?.getBoundingClientRect().width;
+  if (!w) return;
+  authActionWidth.value = Math.round(w);
+}
 </script>
 
 <style scoped>
@@ -157,6 +207,30 @@ onUnmounted(() => {
   position: relative;
 }
 
+.left-store {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.left-foot {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+}
+
 .brand {
   position: absolute;
   top: 18px;
@@ -168,8 +242,8 @@ onUnmounted(() => {
 }
 
 .brand-logo {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: block;
   opacity: 0.8;
   filter: brightness(0) invert(1);
@@ -191,17 +265,25 @@ onUnmounted(() => {
   height: 100vh;
   border-radius: 28px 0 0 28px;
   border: none;
-  display: grid;
-  grid-template-rows: 1fr auto;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .sheet-inner {
-  padding: 28px 26px 18px;
+  padding: 48px;
+  flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  align-content: start;
+  grid-template-rows: auto auto var(--auth-body-h);
+  align-content: center;
   gap: 18px;
+}
+
+@media (max-width: 980px) {
+  .sheet-inner {
+    padding: 48px;
+    align-content: center;
+  }
 }
 
 .welcome {
@@ -222,13 +304,10 @@ onUnmounted(() => {
   color: #333333;
 }
 
-.welcome-store {
-  font-size: 12px;
-}
-
 .tabs {
   display: flex;
   justify-content: center;
+  margin-top: 42px;
 }
 
 .seg {
@@ -277,11 +356,14 @@ onUnmounted(() => {
 
 .content {
   display: grid;
+  height: var(--auth-body-h);
+  margin-top: 30px;
   align-content: start;
 }
 
 .qr-area,
 .nfc-area {
+  height: 100%;
   display: grid;
   gap: 12px;
   justify-items: center;
@@ -290,6 +372,10 @@ onUnmounted(() => {
 
 .qr-hint {
   font-size: 12px;
+}
+
+.apron {
+  font-weight: 900;
 }
 
 .qr-img {
@@ -366,6 +452,7 @@ onUnmounted(() => {
 }
 
 .pin-area {
+  height: 100%;
   display: grid;
   gap: 12px;
 }
@@ -395,9 +482,14 @@ onUnmounted(() => {
   border: none;
   outline: none;
   background: transparent;
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: 4px;
+}
+
+.pin-input::placeholder {
+  color: rgba(17, 17, 17, 0.5);
+  letter-spacing: 0;
 }
 
 .pin-clear {
@@ -410,20 +502,7 @@ onUnmounted(() => {
 
 .pin-actions {
   display: grid;
+  justify-items: center;
 }
 
-.pin-actions .btn {
-  width: 100%;
-}
-
-.sheet-foot {
-  padding: 14px 18px;
-  border-top: 1px solid var(--line);
-  background: #fff;
-}
-
-.foot-text {
-  font-size: 12px;
-  text-align: center;
-}
 </style>
