@@ -264,6 +264,10 @@
     <MemberModal v-if="memberVisible" @close="memberVisible = false" />
     <PayModal v-if="payVisible" :amount="totalDue" @close="payVisible = false" @success="onPaySuccess" />
 
+    <Transition name="toast">
+      <div v-if="toast.visible" class="toast">{{ toast.text }}</div>
+    </Transition>
+
     <div v-if="searchKeyboardVisible" class="kbd-mask" @click="closeSearchKeyboard">
       <div class="kbd-wrap" :style="kbdWrapStyle" @click.stop>
         <SearchKeyboard v-model="searchQuery" :maxLen="32" @close="closeSearchKeyboard" />
@@ -675,6 +679,8 @@ function confirmTextModal(value: string) {
 }
 
 const payVisible = ref(false);
+const toast = ref<{ visible: boolean; text: string }>({ visible: false, text: "" });
+let toastTimer: number | null = null;
 
 function onPay() {
   if (!canPay.value) return;
@@ -682,10 +688,24 @@ function onPay() {
 }
 
 function onPaySuccess() {
+  const paid = totalDue.value;
   payVisible.value = false;
+  showToast(`支付成功 ¥${paid.toFixed(2)}`);
   orderStore.newOrder();
   memberStore.logout();
 }
+
+function showToast(text: string) {
+  toast.value = { visible: true, text };
+  if (toastTimer) window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    toast.value.visible = false;
+  }, 1600);
+}
+
+onUnmounted(() => {
+  if (toastTimer) window.clearTimeout(toastTimer);
+});
 
 function toggleTakeout() {
   orderStore.setOrderType(order.value.type === "TAKE_OUT" ? "DINE_IN" : "TAKE_OUT");
@@ -1335,6 +1355,33 @@ const memberActivities: MemberCouponItem[] = [
 
 .member-panel-leave-to .member-panel {
   transform: translateX(-36px);
+}
+
+.toast {
+  position: fixed;
+  top: calc(var(--topbar-h) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  background: rgba(17, 17, 17, 0.92);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  user-select: none;
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px);
 }
 
 .order-list {
