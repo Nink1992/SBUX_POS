@@ -163,6 +163,257 @@ const seedProducts: Product[] = [
     addons: [{ id: "shot", name: "浓缩加一份", price: 5 }]
   },
   {
+    id: "cappuccino",
+    name: "卡布奇诺",
+    searchKeywords: ["kbqn", "kabuchinuo", "cappuccino"],
+    basePrice: 32,
+    primaryCategoryId: "drink",
+    subCategoryId: "espresso",
+    specGroups: [
+      {
+        id: "size",
+        name: "杯型",
+        required: true,
+        options: [
+          { id: "tall", name: "中杯", subtext: "355ml" },
+          { id: "grande", name: "中杯", subtext: "473ml" },
+          { id: "venti", name: "超大杯", subtext: "592ml" }
+        ]
+      },
+      {
+        id: "temp",
+        name: "温度",
+        required: true,
+        options: [
+          { id: "very_hot", name: "特别热" },
+          { id: "hot", name: "热" },
+          { id: "warm", name: "微热" }
+        ]
+      },
+      {
+        id: "espresso",
+        name: "浓缩咖啡",
+        required: false,
+        options: [
+          { id: "classic_dark", name: "经典浓缩（深烘）" },
+          { id: "blonde", name: "金烘浓缩（浅烘）" },
+          { id: "decaf_dark", name: "低因浓缩（深烘）" }
+        ]
+      },
+      {
+        id: "milk",
+        name: "添加或更换牛奶",
+        required: false,
+        options: [
+          { id: "whole", name: "全脂牛奶" },
+          { id: "soy", name: "巴旦木奶" },
+          { id: "oat", name: "燕麦奶" },
+          { id: "nonfat", name: "脱脂牛奶" }
+        ]
+      },
+      {
+        id: "foam",
+        name: "奶泡",
+        required: false,
+        options: [
+          { id: "std", name: "标准奶泡" },
+          { id: "less", name: "少奶泡" },
+          { id: "more", name: "多奶泡" }
+        ]
+      }
+    ],
+    addons: [
+      { id: "shot", name: "浓缩加一份", price: 5 },
+      { id: "vanilla", name: "香草糖浆", price: 3, mutexGroupId: "syrup" },
+      { id: "caramel", name: "焦糖糖浆", price: 3, mutexGroupId: "syrup" }
+    ]
+  },
+  {
+    id: "caramel_macchiato",
+    name: "焦糖玛奇朵",
+    searchKeywords: ["jtmt", "jiaotangmaqiduo", "macchiato"],
+    basePrice: 38,
+    primaryCategoryId: "drink",
+    subCategoryId: "espresso",
+    specGroups: [
+      {
+        id: "size",
+        name: "杯型",
+        required: true,
+        options: [
+          { id: "tall", name: "中杯", subtext: "355ml" },
+          { id: "grande", name: "中杯", subtext: "473ml" },
+          { id: "venti", name: "超大杯", subtext: "592ml" }
+        ]
+      },
+      {
+        id: "temp",
+        name: "温度",
+        required: true,
+        options: [
+          { id: "very_hot", name: "特别热" },
+          { id: "hot", name: "热" },
+          { id: "warm", name: "微热" },
+          { id: "ice", name: "冰" },
+          { id: "less_ice", name: "少冰" }
+        ]
+      },
+      {
+        id: "sweet",
+        name: "甜度选择",
+        required: false,
+        options: [
+          { id: "classic", name: "经典糖" },
+          { id: "zero", name: "0热量代糖" },
+          { id: "no_sugar", name: "不另外加糖" }
+        ]
+      },
+      {
+        id: "espresso",
+        name: "浓缩咖啡",
+        required: false,
+        options: [
+          { id: "classic_dark", name: "经典浓缩（深烘）" },
+          { id: "blonde", name: "金烘浓缩（浅烘）" }
+        ]
+      },
+      {
+        id: "milk",
+        name: "添加或更换牛奶",
+        required: false,
+        options: [
+          { id: "whole", name: "全脂牛奶" },
+          { id: "soy", name: "巴旦木奶" },
+          { id: "oat", name: "燕麦奶" },
+          { id: "nonfat", name: "脱脂牛奶" }
+        ]
+      }
+    ],
+    addons: [
+      { id: "shot", name: "浓缩加一份", price: 5 },
+      { id: "caramel", name: "焦糖糖浆", price: 3, mutexGroupId: "syrup" }
+    ]
+  },
+  {
+    id: "mocha",
+    name: "摩卡",
+    searchKeywords: ["mk", "moka", "mocha"],
+    basePrice: 36,
+    primaryCategoryId: "drink",
+    subCategoryId: "espresso",
+    specGroups: [
+      {
+        id: "size",
+        name: "杯型",
+        required: true,
+        options: [
+          { id: "tall", name: "中杯", subtext: "355ml" },
+          { id: "grande", name: "中杯", subtext: "473ml" },
+          { id: "venti", name: "超大杯", subtext: "592ml" }
+        ]
+      },
+      {
+        id: "temp",
+        name: "温度",
+        required: true,
+        options: [
+          { id: "very_hot", name: "特别热" },
+          { id: "hot", name: "热" },
+          { id: "warm", name: "微热" },
+          { id: "ice", name: "冰" }
+        ]
+      },
+      {
+        id: "sweet",
+        name: "甜度选择",
+        required: false,
+        options: [
+          { id: "classic", name: "经典糖" },
+          { id: "zero", name: "0热量代糖" },
+          { id: "less", name: "少少甜" },
+          { id: "std", name: "标准甜" }
+        ]
+      },
+      {
+        id: "espresso",
+        name: "浓缩咖啡",
+        required: false,
+        options: [
+          { id: "classic_dark", name: "经典浓缩（深烘）" },
+          { id: "blonde", name: "金烘浓缩（浅烘）" },
+          { id: "decaf_dark", name: "低因浓缩（深烘）" }
+        ]
+      },
+      {
+        id: "milk",
+        name: "添加或更换牛奶",
+        required: false,
+        options: [
+          { id: "whole", name: "全脂牛奶" },
+          { id: "soy", name: "巴旦木奶" },
+          { id: "oat", name: "燕麦奶" },
+          { id: "nonfat", name: "脱脂牛奶" }
+        ]
+      }
+    ],
+    addons: [
+      { id: "shot", name: "浓缩加一份", price: 5 },
+      { id: "vanilla", name: "香草糖浆", price: 3, mutexGroupId: "syrup" }
+    ]
+  },
+  {
+    id: "flat_white",
+    name: "馥芮白",
+    searchKeywords: ["frb", "furuibai", "flat_white", "flatwhite"],
+    basePrice: 35,
+    primaryCategoryId: "drink",
+    subCategoryId: "espresso",
+    specGroups: [
+      {
+        id: "size",
+        name: "杯型",
+        required: true,
+        options: [
+          { id: "tall", name: "中杯", subtext: "355ml" },
+          { id: "grande", name: "中杯", subtext: "473ml" }
+        ]
+      },
+      {
+        id: "temp",
+        name: "温度",
+        required: true,
+        options: [
+          { id: "very_hot", name: "特别热" },
+          { id: "hot", name: "热" },
+          { id: "warm", name: "微热" }
+        ]
+      },
+      {
+        id: "espresso",
+        name: "浓缩咖啡",
+        required: false,
+        options: [
+          { id: "classic_dark", name: "经典浓缩（深烘）" },
+          { id: "blonde", name: "金烘浓缩（浅烘）" }
+        ]
+      },
+      {
+        id: "milk",
+        name: "添加或更换牛奶",
+        required: false,
+        options: [
+          { id: "whole", name: "全脂牛奶" },
+          { id: "oat", name: "燕麦奶" },
+          { id: "nonfat", name: "脱脂牛奶" }
+        ]
+      }
+    ],
+    addons: [
+      { id: "shot", name: "浓缩加一份", price: 5 },
+      { id: "oat", name: "燕麦奶", price: 6 }
+    ]
+  },
+  {
     id: "iced_latte",
     name: "冰拿铁",
     searchKeywords: ["bnt", "bingnatie", "icedlatte"],
