@@ -52,7 +52,6 @@
             </div>
 
             <div v-else class="pin-area">
-              <div class="pin-title">数字密码登录</div>
               <div class="pin-field">
                 <input class="pin-input" :value="maskedPin" readonly inputmode="numeric" />
                 <button class="pin-clear" :disabled="!pin" @click="pin = ''">清空</button>
@@ -366,12 +365,6 @@ onUnmounted(() => {
 .pin-area {
   display: grid;
   gap: 12px;
-}
-
-.pin-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #111111;
 }
 
 .pin-field {
