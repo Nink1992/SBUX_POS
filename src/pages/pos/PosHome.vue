@@ -1655,6 +1655,7 @@ const memberActivities: MemberCouponItem[] = [
   padding: 12px;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-content: start;
   gap: 12px;
   background: #F5F5F7;
 }
