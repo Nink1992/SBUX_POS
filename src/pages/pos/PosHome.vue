@@ -122,23 +122,23 @@
       </section>
 
       <section class="actions card">
-        <button class="btn" @click="orderStore.newOrder()">清空</button>
-        <button class="btn icon-only" :disabled="!selectedLine" @click="onInc">
+        <button class="btn" :disabled="!hasCartItems" @click="orderStore.newOrder()">清空</button>
+        <button class="btn icon-only" :disabled="!hasCartItems || !selectedLine" @click="onInc">
           <img class="pm-icon" :src="iconPlus" alt="" />
         </button>
         <div class="qty-box card">
           <div class="muted meta">数量</div>
           <div class="qty-num">{{ selectedLine ? selectedLine.qty : "-" }}</div>
         </div>
-        <button class="btn icon-only" :disabled="!selectedLine" @click="onDec">
+        <button class="btn icon-only" :disabled="!hasCartItems || !selectedLine" @click="onDec">
           <img class="pm-icon" :src="iconMinus" alt="" />
         </button>
-        <button class="btn" :disabled="!selectedLine" @click="onRemove">删除</button>
-        <button class="btn" :disabled="!selectedLine" @click="onEditLineCustomization">客制化</button>
+        <button class="btn" :disabled="!hasCartItems || !selectedLine" @click="onRemove">删除</button>
+        <button class="btn" :disabled="!hasCartItems || !selectedLine" @click="onEditLineCustomization">客制化</button>
         <button class="btn" disabled>优惠券</button>
         <button class="btn" disabled>店用餐具</button>
         <button class="btn" disabled>一次性餐具</button>
-        <button class="btn" :aria-pressed="order.type === 'TAKE_OUT'" @click="toggleTakeout">外带</button>
+        <button class="btn" :disabled="!hasCartItems" :aria-pressed="order.type === 'TAKE_OUT'" @click="toggleTakeout">外带</button>
         <button class="btn" disabled>挂单</button>
       </section>
 
@@ -345,6 +345,7 @@ const orderStore = useOrderStore();
 const order = computed(() => orderStore.order);
 const selectedLineId = computed(() => orderStore.selectedLineId);
 const selectedLine = computed(() => order.value.lines.find((l) => l.id === selectedLineId.value) ?? null);
+const hasCartItems = computed(() => order.value.lines.length > 0);
 
 const subtotal = computed(() => orderStore.subtotal);
 const discountTotal = computed(() => orderStore.discountTotal);
